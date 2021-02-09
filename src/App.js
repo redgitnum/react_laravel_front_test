@@ -60,12 +60,20 @@ function App() {
           document.getElementById('name').focus();
       })
   }
+
+  const deleteUser = (id, e) => {
+    e.target.disabled = true;
+    document.getElementById(`loader${id}`).classList.toggle('invisible');
+    axios
+        .delete('http://127.0.0.1:8000/api/delete', {data: {'id': id}})
+        .then(response => response.data)
+        .then(console.log)
+  }
   return (
     <div className="bg-gray-100 flex flex-col min-h-screen justify-center items-center">
       <h1 className="text-2xl text-indigo-700 font-bold pb-4">
       Add random people app
       </h1>          
-      <button >CLICK ME</button>
       <div className="p-4 m-2 bg-blue-300 rounded shadow-lg">
         <form onSubmit={addPerson}>
             <div className="flex flex-col justify-center">
@@ -90,18 +98,21 @@ function App() {
             <div>Action</div>
         </div>
         <div className="max-h-72 overflow-auto">
-            <div className="grid grid-cols-4 gap-3 p-2 place-items-center">
-                <div>age</div>
-                <div>name</div>
-                <div>surname</div>
+          {people && people.map((per, i) => 
+            <div className="grid grid-cols-4 gap-3 p-2 place-items-center" key={per.id}>
+                <div>{per.age}</div>
+                <div>{per.name}</div>
+                <div>{per.surname}</div>
                 <div className="flex justify-center items-center">
                     <button 
+                    onClick={(e) => deleteUser(per.id, e)}
                     className="p-2 ml-6 rounded bg-red-500 hover:bg-red-300 hover:text-black active:bg-red-400 transition text-white whitespace-nowrap">
                         DELETE ME
                     </button>
-                    <div className="loader invisible inline-block p-1"></div>
+                    <div className="w-6 h-6 rounded-full border-b-2 animate-spin border-red-500 inline-block p-1 ml-2 invisible" id={'loader'+per.id}></div>
                 </div>
             </div>
+          )}
         </div>
       </div>
   </div>
